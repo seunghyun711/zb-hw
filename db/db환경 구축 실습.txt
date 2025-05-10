@@ -1,0 +1,66 @@
+MariaDB [mysql]> select Host, User ,Password from user;
++-----------------+-------------+-------------------------------------------+
+| Host            | User        | Password                                  |
++-----------------+-------------+-------------------------------------------+
+| localhost       | mariadb.sys |                                           |
+| localhost       | root        | 						 |
+| desktop-osrjl5t | root        |						 |
+| 127.0.0.1       | root        | 						 |
+| ::1             | root        |						 |
+| localhost       | testuser3   | 						 |
++-----------------+-------------+-------------------------------------------+
+6 rows in set (0.066 sec)
+
+MariaDB [mysql]> create database db1;
+Query OK, 1 row affected (0.024 sec)
+
+MariaDB [mysql]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| db1                |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.017 sec)
+
+MariaDB [mysql]> drop database db1;
+Query OK, 0 rows affected (0.050 sec)
+
+MariaDB [mysql]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.002 sec)
+
+MariaDB [mysql]> create user 'testuser1'@'localhost' identified by 'zb';
+Query OK, 0 rows affected (0.019 sec)
+
+MariaDB [mysql]> selct User, Host, Password from user;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'selct User, Host, Password from user' at line 1
+MariaDB [mysql]> select User, Host, Password from user;
++-------------+-----------------+-------------------------------------------+
+| User        | Host            | Password                                  |
++-------------+-----------------+-------------------------------------------+
+| mariadb.sys | localhost       |                                           |
+| root        | localhost       | 							 |
+| root        | desktop-osrjl5t | 						 |
+| root        | 127.0.0.1       | 							 |
+| root        | ::1             | 							 |
+| testuser3   | localhost       | 							 |
+| testuser1   | localhost       | 							 |
++-------------+-----------------+-------------------------------------------+
+7 rows in set (0.002 sec)
+
+MariaDB [mysql]> flush privilefes;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'privilefes' at line 1
+MariaDB [mysql]> flush privileges
+    -> ;
+Query OK, 0 rows affected (0.013 sec)
