@@ -28,6 +28,18 @@ public class ResponseMessage {
                 .build();
     }
 
+    public static ResponseMessage fail(String message, Object data) {
+        return ResponseMessage.builder()
+                .header(ResponseMessageHeader.builder()
+                        .result(false)
+                        .resultCode("")
+                        .message(message)
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .build())
+                .body(data)
+                .build();
+    }
+
     public static ResponseMessage success(Object data) {
         return ResponseMessage.builder()
                 .header(ResponseMessageHeader.builder()

@@ -3,6 +3,11 @@ package com.spring.jpa.user;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.spring.jpa.board.entity.Board;
+import com.spring.jpa.board.entity.BoardComment;
+import com.spring.jpa.board.model.ServiceResult;
+import com.spring.jpa.board.service.BoardService;
+import com.spring.jpa.common.model.ResponseResult;
 import com.spring.jpa.notice.entity.Notice;
 import com.spring.jpa.notice.entity.NoticeLike;
 import com.spring.jpa.notice.model.NoticeResponse;
@@ -15,12 +20,14 @@ import com.spring.jpa.user.exception.PasswordNotMatchException;
 import com.spring.jpa.user.exception.UserNotFoundException;
 import com.spring.jpa.user.model.*;
 import com.spring.jpa.user.repository.UserRepository;
+import com.spring.jpa.user.service.PointService;
 import com.spring.jpa.util.JwtUtils;
 import com.spring.jpa.util.PasswordUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.engine.jdbc.spi.ResultSetReturn;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +50,8 @@ public class ApiUserController {
     private final UserRepository userRepository;
     private final NoticeRepository noticeRepository;
     private final NoticeLikeRepository noticeLikeRepository;
+    private final BoardService boardService;
+    private final PointService pointService;
 
     // 사용자 등록시 입력값이 유효하지 않은 경우 예외 발생
     @GetMapping("/v1/api/user")
@@ -504,5 +513,59 @@ public class ApiUserController {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<?> UserNotFoundExceptionHandler(UserNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * 내가 작성한 게시글 목록을 리턴하는 api
+     */
+    @GetMapping("/api/user/board/post")
+    public ResponseEntity<?> myPost(@RequestHeader("hong") String token) {
+        String email = "";
+
+        try {
+            email = JwtUtils.getIssuer(token);
+        } catch (SignatureVerificationException e) {
+            return ResponseResult.fail("토큰 정보가 일치하지 않습니다.");
+        }
+        List<Board> list = boardService.postList(email);
+        return ResponseResult.success(list);
+    }
+
+    /**
+     * 내가 작성한 게시글의 코멘트 목록을 리턴하는 api
+     */
+    @GetMapping("/api/user/board/comment")
+    public ResponseEntity<?> myComments(@RequestHeader("hong") String token) {
+        String email = "";
+
+        try {
+            email = JwtUtils.getIssuer(token);
+        } catch (SignatureVerificationException e) {
+            return ResponseResult.fail("토큰 정보가 일치하지 않습니다.");
+        }
+
+        List<BoardComment> list = boardService.commentList(email);
+        return ResponseResult.success(list);
+    }
+
+    /**
+     * 사용자의 포인트 정보를 만들고 게시글을 작성할 경우, 포인트를 누적하는 api
+     */
+    @PostMapping("/api/user/point")
+    public ResponseEntity<?> userPoint(@RequestHeader("hong") String token,
+                                       @RequestBody UserPointInput userPointInput) {
+
+        String email = "";
+
+        try {
+            email = JwtUtils.getIssuer(token);
+        } catch (SignatureVerificationException e) {
+            return ResponseResult.fail("토큰 정보가 일치하지 않습니다.");
+        }
+
+        ServiceResult result = pointService.addPoint(email, userPointInput);
+        return ResponseResult.result(result);
+
+
     }
 }

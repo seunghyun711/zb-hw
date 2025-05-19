@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,5 +23,16 @@ public class ResponseError {
                 .field(error.getField())
                 .message(error.getDefaultMessage())
                 .build();
+    }
+
+    public static List<ResponseError> of(List<ObjectError> errors) {
+        List<ResponseError> responseErrors = new ArrayList<>();
+
+        if (errors != null) {
+            errors.stream().forEach((e) -> {
+                responseErrors.add(ResponseError.of((FieldError) e));
+            });
+        }
+        return responseErrors;
     }
 }

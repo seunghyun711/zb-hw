@@ -28,6 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByRegDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("select * from User u where u.regDate between :startDate and :endDate")
+    @Query("select u from User u where u.regDate between :startDate and :endDate")
     List<User> findToday(LocalDateTime startDate, LocalDateTime endDate);
 }
