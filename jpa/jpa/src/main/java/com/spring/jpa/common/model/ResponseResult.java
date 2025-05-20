@@ -10,6 +10,10 @@ import java.util.List;
 
 public class ResponseResult {
     public static ResponseEntity<?> fail(String message) {
+        return fail(message, null);
+    }
+
+    public static ResponseEntity<?> fail(String message, Object data) {
         return ResponseEntity.badRequest().body(ResponseMessage.fail(message));
     }
 
@@ -17,8 +21,8 @@ public class ResponseResult {
         return success(null);
     }
 
-    public static ResponseEntity<?> success(List<?> list) {
-        return ResponseEntity.ok().body(ResponseMessage.success(list));
+    public static ResponseEntity<?> success(Object data) {
+        return ResponseEntity.ok().body(ResponseMessage.success(data));
     }
 
 

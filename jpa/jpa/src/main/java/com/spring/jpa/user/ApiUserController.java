@@ -566,6 +566,7 @@ public class ApiUserController {
         ServiceResult result = pointService.addPoint(email, userPointInput);
         return ResponseResult.result(result);
 
-
     }
+
+
 }

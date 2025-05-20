@@ -32,3 +32,5 @@ logging:
   level:
     org.hibernate.SQL: trace
     org.hibernate.type: trace
+  file:
+    name: ./lgs/spring-jpa.log

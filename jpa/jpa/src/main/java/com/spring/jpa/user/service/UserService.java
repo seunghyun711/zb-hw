@@ -3,6 +3,7 @@ package com.spring.jpa.user.service;
 import com.spring.jpa.board.model.ServiceResult;
 import com.spring.jpa.user.entity.User;
 import com.spring.jpa.user.model.UserLogCount;
+import com.spring.jpa.user.model.UserLogin;
 import com.spring.jpa.user.model.UserNoticeCount;
 import com.spring.jpa.user.model.UserSummary;
 import org.springframework.stereotype.Service;
@@ -27,4 +28,6 @@ public interface UserService {
     ServiceResult addInterestUser(String email, Long id);
 
     ServiceResult removeInterestUser(String email, Long id);
+
+    User login(UserLogin userLogin);
 }

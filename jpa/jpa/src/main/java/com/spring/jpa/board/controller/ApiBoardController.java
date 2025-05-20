@@ -1,11 +1,13 @@
 package com.spring.jpa.board.controller;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.spring.jpa.board.entity.Board;
 import com.spring.jpa.board.entity.BoardType;
 import com.spring.jpa.board.model.*;
 import com.spring.jpa.board.repository.BoardRepository;
 import com.spring.jpa.board.repository.BoardTypeRepository;
 import com.spring.jpa.board.service.BoardService;
+import com.spring.jpa.common.exception.BizException;
 import com.spring.jpa.common.model.ResponseResult;
 import com.spring.jpa.notice.model.ResponseError;
 import com.spring.jpa.user.model.ResponseMessage;
@@ -228,5 +230,50 @@ public class ApiBoardController {
         return ResponseResult.result(result);
     }
 
+    /**
+     * AOP의 Around를 이용해 게시판 상세 조회에 대한 히스토리를 기록하는 api
+     */
+    @GetMapping("/api/board/{id}")
+    public ResponseEntity<?> detail(@PathVariable("id") Long id) {
+
+        Board board = null;
+        try {
+            board = boardService.detail(id);
+        } catch (BizException e) {
+            return ResponseResult.fail(e.getMessage());
+        }
+
+        return ResponseResult.success(board);
+
+    }
+
+    /**
+     * 인터셉터를 이용해 api 요청에 대한 정보를 log에 기록하는 기능
+     * 글목록 api 호출("/api/board")
+     */
+    @GetMapping("/api/board")
+    public ResponseEntity<?> list() {
+        List<Board> list = boardService.list();
+        return ResponseResult.success(list);
+    }
+
+    /**
+     * 인터셉터를 활용하여 jwt 인증이 필요한 api에 대해 토큰 유효성을 검증하는 api
+     * 게시글 쓰기 기능 구현(/api/board)
+     * 글쓰기 api 호출시 토큰 유효성 검사
+     */
+    @PostMapping("/api/board")
+    public ResponseEntity<?> add(@RequestBody BoardInput boardInput,
+                                 @RequestHeader("hong") String token) {
+        String email = "";
+
+        try {
+            email = JwtUtils.getIssuer(token);
+        } catch (JWTVerificationException e) {
+            return ResponseResult.fail("토큰 정보가 정확하지 않습니다.");
+        }
+        ServiceResult result = boardService.add(email, boardInput);
+        return ResponseResult.result(result);
+    }
 }
 
